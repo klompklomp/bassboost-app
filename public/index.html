@@ -1,13 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Bass Boost MP3</title>
+  <meta charset="UTF-8">
+  <title>Bass Boost Meme App</title>
+  <style>
+    body {
+      font-family: Comic Sans MS, cursive, sans-serif;
+      text-align: center;
+      margin: 50px;
+      background-color: #fceaff;
+    }
+    audio, button {
+      margin-top: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      margin: 10px;
+      background: #ffccff;
+      border: 2px solid #ff66cc;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff99ff;
+    }
+  </style>
 </head>
 <body>
-  <h1>Bass Boost Your MP3</h1>
-  <form action="/upload" method="POST" enctype="multipart/form-data">
-    <input type="file" name="audioFile" accept=".mp3" required>
-    <button type="submit">Upload & Bass Boost</button>
+  <h1>Bass Boost Meme Machine 🔊</h1>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="audioFile" accept=".mp3" required />
+    <button type="submit">Upload & Process</button>
   </form>
+
+  <audio id="audioPreview" controls style="display: none;"></audio>
+
+  <a id="downloadLink" href="#" download="bass-boosted.mp3" style="display: none;">
+    <button>Download Processed File</button>
+  </a>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const audio = document.getElementById('audioPreview');
+    const downloadLink = document.getElementById('downloadLink');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      .then(res => res.json())
+      .then(data => {
+        audio.src = data.file;
+        audio.style.display = 'block';
+        audio.load();
+        audio.play();
+
+        downloadLink.href = data.file;
+        downloadLink.style.display = 'inline-block';
+      })
+      .catch(err => {
+        console.error('Upload failed:', err);
+      });
+    });
+  </script>
 </body>
 </html>
